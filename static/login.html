@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rotem Shani — כניסה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:#0a0c0f; color:#e2e8f0; font-family:'Heebo',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+.box { background:#111318; border:1px solid #2a3040; border-radius:16px; padding:44px 36px; width:360px; text-align:center; }
+.logo { font-size:.75rem; letter-spacing:.15em; color:#818cf8; text-transform:uppercase; margin-bottom:20px; }
+h1 { font-size:1.5rem; font-weight:800; margin-bottom:4px; }
+p  { color:#64748b; font-size:.85rem; margin-bottom:28px; }
+input {
+  width:100%; padding:11px 14px; margin-bottom:12px;
+  background:#181c23; border:1px solid #2a3040; border-radius:8px;
+  color:#e2e8f0; font-size:1rem; font-family:'Heebo',sans-serif; outline:none;
+  transition:border-color .2s;
+}
+input:focus { border-color:#818cf8; }
+button {
+  width:100%; padding:12px; margin-top:4px;
+  background:#818cf8; border:none; border-radius:8px;
+  color:#fff; font-size:1rem; font-weight:600; font-family:'Heebo',sans-serif;
+  cursor:pointer; transition:opacity .2s;
+}
+button:hover { opacity:.88; }
+button:disabled { opacity:.5; cursor:default; }
+.err { color:#f87171; font-size:.83rem; margin-top:10px; min-height:20px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">Rotem Shani Ads</div>
+  <h1>כניסה למערכת</h1>
+  <p>הזן את פרטי הכניסה שלך</p>
+  <input id="user" type="text" placeholder="שם משתמש" autocomplete="username" />
+  <input id="pass" type="password" placeholder="סיסמה" autocomplete="current-password" />
+  <button id="btn" onclick="doLogin()">כניסה</button>
+  <div class="err" id="err"></div>
+</div>
+<script>
+document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+async function doLogin() {
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('err');
+  btn.disabled = true; err.textContent = '';
+  const res = await fetch('/login', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      username: document.getElementById('user').value.trim(),
+      password: document.getElementById('pass').value
+    })
+  });
+  const data = await res.json();
+  if(data.ok) {
+    window.location.href = data.role === 'admin' ? '/' : '/';
+  } else {
+    err.textContent = data.error || 'שגיאה';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
